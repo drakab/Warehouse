@@ -1,4 +1,8 @@
 ﻿using System;
+using Warehouse.App.Abstract;
+using Warehouse.App.Concrete;
+using Warehouse.App.Managers;
+using Warehouse.Domain.Entity;
 
 namespace Warehouse
 {
@@ -7,11 +11,9 @@ namespace Warehouse
         static void Main(string[] args)
         {
             MenuActionService actionService = new MenuActionService();
-            actionService = Initialize(actionService);
-            ItemService itemService = new ItemService();
+            ItemManager itemManager = new ItemManager(actionService);
 
             Console.WriteLine("Welcome to warehouse app!");
-
             while (true)
             {
                 Console.WriteLine("Please let me know what you want to do:");
@@ -25,21 +27,23 @@ namespace Warehouse
                 switch (operation.KeyChar)
                 {
                     case '1':
-                        var keyInfo = itemService.AddNewItemView(actionService);
-                        var id = itemService.AddNewItem(keyInfo.KeyChar);
+                        var newId = itemManager.AddNewItem();
                         break;
                     case '2':
-                        var idToRemove = itemService.RemoveItemView();
-                        var idRemoved = itemService.RemoveItem(idToRemove);
-                        Console.WriteLine($"Item with id = {idRemoved} has been deleted.");
+                        var removedId = itemManager.RemoveItem();
+                        Console.WriteLine($"Item with id = {removedId} has been deleted.");
                         break;
                     case '3':
-                        var detailId = itemService.ItemDetailSelectionView();
-                        itemService.ItemDetailView(detailId);
+                        var item = itemManager.ShowItem();
+                        //var detailId = itemService.ItemDetailSelectionView();
+                        //itemService.ItemDetailView(detailId);
+                        Console.WriteLine($"Item id: {item.Id} name: {item.Name} category: {item.TypeId}");
                         break;
                     case '4':
-                        var categoryId = itemService.CategoryDetailSelectionView();
-                        itemService.CategoryDetailView(categoryId);
+                        //var categoryId = itemService.CategoryDetailSelectionView();
+                        //itemService.CategoryDetailView(categoryId);
+
+                        Console.WriteLine("You choosen 4 :)");
                         break;
                     default:
                         Console.WriteLine("Action you entered does not exist.");
@@ -47,19 +51,6 @@ namespace Warehouse
                 }
             }
             
-        }
-        private static MenuActionService Initialize(MenuActionService actionService)
-        {
-            actionService.AddNewAction(1, "Add item", "Main");
-            actionService.AddNewAction(2, "Remove item", "Main");
-            actionService.AddNewAction(3, "Show details", "Main");
-            actionService.AddNewAction(4, "List of items", "Main");
-
-            actionService.AddNewAction(1, "Clothing", "CategoryItemMenu");
-            actionService.AddNewAction(2, "Electronics", "CategoryItemMenu");
-            actionService.AddNewAction(3, "Grocery", "CategoryItemMenu");
-
-            return actionService;
         }
     }
 }
